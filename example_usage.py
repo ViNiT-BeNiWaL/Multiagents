@@ -214,4 +214,4 @@ def interactive_demo():
         except KeyboardInterrupt:
             console.print("\n[yellow]Interrupted by user[/yellow]")
             break
-        except Exception as e:
+       

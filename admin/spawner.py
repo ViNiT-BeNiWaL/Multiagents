@@ -43,46 +43,25 @@ class ModelSelector:
     # Model selection based on task type/category
     TASK_MODELS = {
         TaskCategory.CODING: [
-            "qwen2.5-coder:7b",  # Best for code generation
-            "deepseek-coder:6.7b",  # Excellent for code
-            "codellama:7b",  # Specialized code model
-            "qwen2.5:7b",  # Good general coding
+            "deepseek-v3.1:671b-cloud"
         ],
         TaskCategory.REASONING: [
-            "qwen2.5:14b",  # Strong reasoning
-            "llama3.1:8b",  # Good logic
-            "phi3:medium",  # Efficient reasoning
-            "gemma2:9b",  # Solid reasoning
+           "deepseek-v3.1:671b-cloud"
         ],
         TaskCategory.MATH: [
-            "qwen2.5:14b",  # Excellent math
-            "deepseek-math:7b",  # Math specialist
-            "llama3.1:8b",  # Good math capabilities
-            "phi3:medium",  # Decent math
+            "deepseek-v3.1:671b-cloud"
         ],
         TaskCategory.CREATIVE: [
-            "llama3.1:8b",  # Creative writing
-            "mistral:7b",  # Good creativity
-            "gemma2:9b",  # Creative tasks
-            "neural-chat:7b",  # Conversational/creative
+            "deepseek-v3.1:671b-cloud"
         ],
         TaskCategory.ANALYSIS: [
-            "llama3.1:8b",  # Data analysis
-            "qwen2.5:14b",  # Deep analysis
-            "mistral:7b",  # Good analytical
-            "gemma2:9b",  # Analysis tasks
+            "deepseek-v3.1:671b-cloud"
         ],
         TaskCategory.PLANNING: [
-            "qwen2.5:14b",  # Strategic planning
-            "llama3.1:8b",  # Task planning
-            "mixtral:8x7b",  # Complex planning
-            "gemma2:9b",  # Planning tasks
+            "qwen3-coder:480b-cloud"
         ],
         TaskCategory.GENERAL: [
-            "llama3.2:3b",  # Fast general tasks
-            "phi3:mini",  # Efficient general
-            "gemma2:2b",  # Quick responses
-            "mistral:7b",  # Versatile
+            "qwen3-coder:480b-cloud"
         ]
     }
 

@@ -50,9 +50,7 @@ echo "╚═══════════════════════�
 echo ""
 
 MODELS=(
-    "qwen2.5-coder:7b:Coding specialist"
-    "llama3.1:8b:Analysis & reasoning"
-    "qwen2.5:14b:Planning & strategy"
+    "deepseek-v3.1:671b-cloud"
 )
 
 for model_info in "${MODELS[@]}"; do

@@ -30,7 +30,7 @@ class FinalReport:
 class FinalizerAgent:
     """Agent responsible for final review and consolidation"""
 
-    def __init__(self, model_name: str = "llama3.1:8b", temperature: float = 0.5):
+    def __init__(self, model_name: str = "gpt-oss:120b-cloud", temperature: float = 0.5):
         self.model_name = model_name
         self.temperature = temperature
         self.reports: Dict[str, FinalReport] = {}
