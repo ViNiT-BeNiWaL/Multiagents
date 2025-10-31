@@ -1,7 +1,4 @@
-"""
-Main orchestrator for coordinating multi-agent system
-REFINED VERSION with file generation support
-"""
+
 import sys
 import ollama
 from typing import Dict, Any, Optional, List
