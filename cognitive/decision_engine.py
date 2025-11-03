@@ -38,7 +38,7 @@ class Decision:
 class DecisionEngine:
     """Engine for making intelligent decisions"""
 
-    def __init__(self, model_name: str = "llama3.1:8b", temperature: float = 0.3):
+    def __init__(self, model_name: str = "gpt-oss:120b-cloud", temperature: float = 0.3):
         self.model_name = model_name
         self.temperature = temperature  # Lower temp for more consistent decisions
         self.decision_history: List[Decision] = []
