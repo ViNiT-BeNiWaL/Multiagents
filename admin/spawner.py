@@ -23,6 +23,7 @@ class TaskCategory(Enum):
     ANALYSIS = "analysis"
     PLANNING = "planning"
     GENERAL = "general"
+    WEB_SEARCH = "web_search"
 
 
 @dataclass
@@ -60,6 +61,9 @@ class ModelSelector:
         TaskCategory.PLANNING: [
             "qwen3-coder:480b-cloud"
         ],
+        TaskCategory.WEB_SEARCH: [
+            "deepseek-v3.1:671b-cloud"
+        ],
         TaskCategory.GENERAL: [
             "qwen3-coder:480b-cloud"
         ]
@@ -92,6 +96,10 @@ class ModelSelector:
         TaskCategory.PLANNING: [
             'plan', 'strategy', 'roadmap', 'schedule', 'organize', 'structure',
             'architecture', 'design system', 'workflow', 'pipeline', 'framework'
+        ],
+        TaskCategory.WEB_SEARCH: [
+            'search', 'find', 'what is', 'who is', 'look up', 'google', 'browse',
+            'research', 'how to', 'latest news', 'current events'
         ]
     }
 

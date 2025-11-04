@@ -6,8 +6,11 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
+from dotenv import load_dotenv
 
-from admin.spawner import AgentSpawner, AgentType
+load_dotenv()
+
+from admin.spawner import AgentSpawner, AgentType, TaskCategory
 from admin.manager import AgentManager, TaskStatus
 from admin.security import SecurityValidator, SecurityLevel
 from cognitive.planner import PlannerAgent
@@ -183,6 +186,17 @@ class MultiAgentOrchestrator:
             if not is_valid:
                 return f"Task blocked by security: {reason}"
 
+            # Handle web search tasks
+            if agent_config.task_category == TaskCategory.WEB_SEARCH:
+                self.console.print("[dim]Performing web search...[/dim]")
+                try:
+                    web_results = ollama.web_search(subtask.description)
+                    self.console.print(f"[green]✓[/green] Web search completed")
+                    # Inject web results into the prompt
+                    subtask.description = f"Based on the following web search results, please answer the user's query.\n\nSearch Results:\n{web_results}\n\nUser Query: {subtask.description}"
+                except Exception as e:
+                    self.console.print(f"[yellow]⚠ Web search failed: {e}[/yellow]")
+
             # Build enhanced prompt for better code generation
             enhanced_prompt = self._build_enhanced_prompt(subtask)
 
@@ -212,12 +226,12 @@ class MultiAgentOrchestrator:
         prompt = f"{subtask.description}\n\n"
         prompt += f"Required output: {subtask.required_output}\n\n"
         prompt += "IMPORTANT: Provide complete, working code with:\n"
-        prompt += "1. Proper imports at the top\n"
-        prompt += "2. Clear docstrings and comments\n"
+        prompt += "1. Proper imports at the top (for languages that support it)\n"
+        prompt += "2. Clear comments and documentation\n"
         prompt += "3. Error handling where appropriate\n"
-        prompt += "4. Type hints for function parameters\n"
+        prompt += "4. For web development, provide HTML, CSS, and JavaScript in separate code blocks.\n"
         prompt += "5. Example usage if applicable\n\n"
-        prompt += "Format your code in markdown code blocks with language specification (```python)"
+        prompt += "Format your code in markdown code blocks with language specification (e.g., ```python, ```html, ```css, ```javascript)."
         
         return prompt
 
@@ -232,6 +246,7 @@ class MultiAgentOrchestrator:
             'testing': f"{base} Write comprehensive tests covering edge cases and error conditions.",
             'planning': f"{base} Create clear, actionable plans with proper dependency management.",
             'creative': f"{base} Be creative while maintaining code quality and functionality.",
+            'web_search': "You are a helpful assistant that can browse the web to answer questions."
         }
         
         return prompts.get(category, base)
@@ -240,6 +255,25 @@ class MultiAgentOrchestrator:
         """Fallback method to manually extract and save code"""
         import re
         created_files = []
+
+        lang_to_ext = {
+            "python": "py",
+            "javascript": "js",
+            "html": "html",
+            "css": "css",
+            "java": "java",
+            "cpp": "cpp",
+            "go": "go",
+            "rust": "rs",
+            "typescript": "ts",
+            "ruby": "rb",
+            "php": "php",
+            "swift": "swift",
+            "kotlin": "kt",
+            "sql": "sql",
+            "shell": "sh",
+            "bash": "sh",
+        }
 
         for subtask_id, result in results.items():
             if not isinstance(result, str):
@@ -253,20 +287,20 @@ class MultiAgentOrchestrator:
                     continue
                     
                 # Determine file extension
-                ext = lang if lang else 'py'
-                if ext not in ['py', 'js', 'java', 'cpp', 'go', 'rs']:
-                    ext = 'py'
+                ext = lang_to_ext.get(lang.lower(), 'txt')
                 
                 # Generate filename
                 clean_id = subtask_id.replace('subtask_', '')
+                filename = f"{clean_id}_{i}.{ext}"
+
                 if 'test' in result.lower():
-                    filename = f"test_{clean_id}.{ext}"
-                elif 'example' in result.lower():
-                    filename = f"example_{clean_id}.{ext}"
-                elif 'cli' in result.lower() or 'interface' in result.lower():
-                    filename = f"cli_interface.{ext}"
-                else:
-                    filename = f"module_{clean_id}.{ext}"
+                    filename = f"test_{clean_id}_{i}.{ext}"
+                elif ext == 'html':
+                    filename = f"index.html"
+                elif ext == 'css':
+                    filename = f"style.css"
+                elif ext == 'js':
+                    filename = f"script.js"
                 
                 # Write file
                 file_result = self.file_manager.write_file(filename, code.strip())
@@ -275,7 +309,7 @@ class MultiAgentOrchestrator:
                     created_files.append({
                         'filename': filename,
                         'type': 'code',
-                        'language': ext,
+                        'language': lang,
                         'size': file_result['size']
                     })
 
