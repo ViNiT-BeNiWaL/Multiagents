@@ -1,4 +1,4 @@
-# Multi-Agent System 🤖
+# Multi-Agent System �
 
 An intelligent multi-agent orchestration system that automatically decomposes complex tasks, selects optimal AI models, and generates complete implementations with working code files.
 
@@ -6,16 +6,16 @@ An intelligent multi-agent orchestration system that automatically decomposes co
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 
-## ✨ Features
+##  Features
 
-- **🧠 Intelligent Task Decomposition**: Automatically breaks down complex tasks into manageable subtasks
-- **🎯 Smart Model Selection**: Chooses the best AI model for each subtask based on task type (coding, analysis, math, creative, etc.)
-- **📁 Automatic File Generation**: Creates actual working files from task results
-- **🔒 Security First**: Built-in security validation for safe operations
-- **📊 Comprehensive Reporting**: Detailed execution reports with quality scores
-- **🎨 Rich CLI Interface**: Beautiful terminal output with progress tracking
+- ** Intelligent Task Decomposition**: Automatically breaks down complex tasks into manageable subtasks
+- ** Smart Model Selection**: Chooses the best AI model for each subtask based on task type (coding, analysis, math, creative, etc.)
+- ** Automatic File Generation**: Creates actual working files from task results
+- ** Security First**: Built-in security validation for safe operations
+- ** Comprehensive Reporting**: Detailed execution reports with quality scores
+- ** Rich CLI Interface**: Beautiful terminal output with progress tracking
 
-## 🏗️ Architecture
+##  Architecture
 
 The system consists of four main layers:
 
@@ -35,7 +35,7 @@ The system consists of four main layers:
 ### 4. **Orchestrator** (`orchestrator.py`)
 Central coordinator that manages the entire execution pipeline
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -102,7 +102,7 @@ result = orchestrator.execute_task(
 print(f"Created {len(result['created_files'])} files")
 ```
 
-## 🎯 Model Selection
+##  Model Selection
 
 The system automatically selects models based on task type:
 
@@ -125,7 +125,7 @@ The system detects task types using keywords:
 - **Planning**: plan, strategy, architecture, design, structure
 - **Creative**: write, create, story, compose, generate
 
-## 📋 Example Tasks
+##  Example Tasks
 
 ### 1. Banking System
 ```python
@@ -159,7 +159,7 @@ orchestrator.execute_task(
 ```
 **Output**: CSV parser, quality metrics, reporting module
 
-## 🗂️ Project Structure
+##  Project Structure
 
 ```
 Multiagents/
@@ -179,7 +179,7 @@ Multiagents/
 └── requirements.txt     # Dependencies
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Custom Model Selection
 
@@ -215,7 +215,7 @@ from admin.security import SecurityLevel
 orchestrator.security.validate_command(command, SecurityLevel.HIGH)
 ```
 
-## 📊 System Statistics
+##  System Statistics
 
 View comprehensive statistics:
 
@@ -234,7 +234,7 @@ Metrics include:
 - File operation statistics
 - Model usage distribution
 
-## 🔒 Security Features
+##  Security Features
 
 - **Path Traversal Prevention**: Restricts file operations to workspace
 - **Command Validation**: Blocks dangerous shell commands
@@ -242,7 +242,7 @@ Metrics include:
 - **Pattern Matching**: Detects forbidden operations (rm -rf, fork bombs, etc.)
 - **Audit Logging**: Tracks all security events
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### 401 Unauthorized Error
 
@@ -295,7 +295,7 @@ ollama pull llama3.2
 - Review result_processor logs
 - Use manual code extraction fallback
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please:
 
@@ -305,23 +305,23 @@ Contributions are welcome! Please:
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+##  License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Built with [Ollama](https://ollama.ai/) for local LLM inference
 - Uses [Rich](https://rich.readthedocs.io/) for beautiful terminal output
 - Models by DeepSeek, Qwen, and other open-source contributors
 
-## 📧 Support
+##  Support
 
 - **Issues**: Open an issue on GitHub
 - **Discussions**: Use GitHub Discussions for questions
 - **Documentation**: See `/docs` for detailed guides
 
-## 🗺️ Roadmap
+##  Roadmap
 
 - [ ] Support for more AI models (GPT-4, Claude)
 - [ ] Web interface for task submission
