@@ -5,6 +5,12 @@
 
 set -e
 
+# Get the directory of this script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Change to the script's directory
+cd "$SCRIPT_DIR"
+
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║     Multi-Agent System - Automated Setup                  ║"
 echo "╚════════════════════════════════════════════════════════════╝"

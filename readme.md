@@ -1,336 +1,74 @@
-# Multi-Agent System �
+# Multi-Agent System
 
-An intelligent multi-agent orchestration system that automatically decomposes complex tasks, selects optimal AI models, and generates complete implementations with working code files.
+This project is a sophisticated multi-agent system designed to execute complex tasks by leveraging the power of large language models (LLMs). It intelligently breaks down tasks, assigns them to specialized AI agents, and generates the necessary files and reports. The system is built to be extensible, allowing for the easy addition of new agents and capabilities.
 
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/status-active-success.svg)
+## Features
 
-##  Features
+- **Intelligent Task Decomposition:** The system can take a high-level task and break it down into smaller, manageable subtasks.
+- **Automatic Model Selection:** Based on the nature of a subtask, the system automatically selects the most appropriate AI model for the job (e.g., a coding model for a programming task, a creative model for writing tasks).
+- **Web Search Capability:** The system can access the web to answer questions and incorporate real-time information into its responses.
+- **File Generation:** The system can generate files, such as code, reports, and other documents, based on the results of the tasks.
+- **Interactive Demo Mode:** An interactive command-line interface allows you to give tasks to the system and see it in action.
+- **Extensible Architecture:** The project is designed to be easily extended with new agents, models, and capabilities.
 
-- ** Intelligent Task Decomposition**: Automatically breaks down complex tasks into manageable subtasks
-- ** Smart Model Selection**: Chooses the best AI model for each subtask based on task type (coding, analysis, math, creative, etc.)
-- ** Automatic File Generation**: Creates actual working files from task results
-- ** Security First**: Built-in security validation for safe operations
-- ** Comprehensive Reporting**: Detailed execution reports with quality scores
-- ** Rich CLI Interface**: Beautiful terminal output with progress tracking
+## System Architecture
 
-##  Architecture
+The system is composed of several key components that work together to execute tasks:
 
-The system consists of four main layers:
+- **`MultiAgentOrchestrator`**: The central coordinator of the entire system. It manages the overall task execution flow.
+- **`AgentSpawner`**: Responsible for dynamically selecting and spawning the best AI model for a given subtask.
+- **`PlannerAgent`**: Creates a step-by-step execution plan for a given task.
+- **`FileManager`**: Manages all file-related operations, such as reading, writing, and creating files.
+- **`ResultProcessor`**: Takes the outputs from the AI models and creates the final implementation files.
+- **`FinalizerAgent`**: Assesses the quality of the results and provides a concluding report.
 
-### 1. **Admin Layer** (`admin/`)
-- **Spawner**: Creates and manages agent instances with automatic model selection
-- **Manager**: Coordinates task execution and inter-agent communication
-- **Security**: Validates operations to prevent harmful commands
-
-### 2. **Cognitive Layer** (`cognitive/`)
-- **Planner**: Breaks down complex tasks into subtasks
-- **Decision Engine**: Makes intelligent routing and prioritization decisions
-
-### 3. **Action Layer** (`action/`)
-- **File Manager**: Handles secure file operations in workspace
-- **Finalizer**: Validates and consolidates results
-
-### 4. **Orchestrator** (`orchestrator.py`)
-Central coordinator that manages the entire execution pipeline
-
-## Quick Start
+## Getting Started
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- Ollama installed and running
-- 8GB+ RAM recommended
+- Python 3.10 or higher
+- [Ollama](https://ollama.ai/) installed and running
 
 ### Installation
 
-1. **Clone the repository**:
-```bash
-git clone <your-repo-url>
-cd Multiagents
-```
+1.  Clone the repository:
 
-2. **Run automated setup**:
-```bash
-chmod +x setup.sh
-./setup.sh
-```
+    ```bash
+    git clone https://github.com/your-username/multi-agent-system.git
+    cd multi-agent-system
+    ```
 
-This will:
-- Install Python dependencies
-- Install Ollama (if not present)
-- Download required AI models
-- Set up workspace directory
+2.  Install the required Python packages:
 
-3. **Or manual setup**:
-```bash
-# Install dependencies
-pip install -r requirements.txt
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-# Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Pull required models
-ollama pull deepseek-v3.1:671b-cloud
-ollama pull qwen3-coder:480b-cloud
-
-# Create workspace
-mkdir -p workspace
-```
+3.  Make sure the Ollama server is running. You can start it by running the `ollama serve` command in your terminal.
 
 ### Usage
 
-**Interactive Mode**:
+To start the interactive demo mode, run the following command:
+
 ```bash
 python orchestrator.py
 ```
 
-**Example Usage**:
-```python
-from orchestrator import MultiAgentOrchestrator
-
-# Initialize orchestrator
-orchestrator = MultiAgentOrchestrator()
-
-# Execute a task
-result = orchestrator.execute_task(
-    "Create a Python password manager with encryption"
-)
-
-# Results include created files
-print(f"Created {len(result['created_files'])} files")
-```
-
-##  Model Selection
-
-The system automatically selects models based on task type:
-
-| Task Type | Primary Model | Use Case |
-|-----------|---------------|----------|
-| **Coding** | deepseek-v3.1:671b-cloud | Writing functions, classes, algorithms |
-| **Planning** | qwen3-coder:480b-cloud | Task decomposition, architecture design |
-| **Analysis** | deepseek-v3.1:671b-cloud | Data analysis, evaluations |
-| **Math** | deepseek-v3.1:671b-cloud | Calculations, equations, statistics |
-| **Creative** | deepseek-v3.1:671b-cloud | Content generation, creative writing |
-| **Reasoning** | deepseek-v3.1:671b-cloud | Logic, deduction, problem-solving |
-
-### Model Selection Keywords
-
-The system detects task types using keywords:
-
-- **Coding**: code, program, function, implement, debug, refactor
-- **Analysis**: analyze, evaluate, compare, review, study
-- **Math**: calculate, compute, equation, formula, statistics
-- **Planning**: plan, strategy, architecture, design, structure
-- **Creative**: write, create, story, compose, generate
-
-##  Example Tasks
-
-### 1. Banking System
-```python
-orchestrator.execute_task(
-    "Create a banking transaction analysis system with fraud detection"
-)
-```
-**Output**: Complete banking system with transaction processing, fraud detection algorithms, and test files
-
-### 2. Web Scraper
-```python
-orchestrator.execute_task(
-    "Build a web scraping and data processing pipeline"
-)
-```
-**Output**: Scraper implementation, data processors, and usage examples
-
-### 3. Password Manager
-```python
-orchestrator.execute_task(
-    "Create a secure CLI password manager with encryption"
-)
-```
-**Output**: Encrypted storage, CLI interface, security utilities
-
-### 4. Data Analysis Tool
-```python
-orchestrator.execute_task(
-    "Build a data quality assessment tool for CSV files"
-)
-```
-**Output**: CSV parser, quality metrics, reporting module
-
-##  Project Structure
+You can then enter tasks at the prompt. For example:
 
 ```
-Multiagents/
-├── admin/                  # Agent management
-│   ├── spawner.py         # Agent creation & model selection
-│   ├── manager.py         # Task coordination
-│   └── security.py        # Security validation
-├── cognitive/             # Planning & decision making
-│   ├── planner.py        # Task decomposition
-│   └── decision_engine.py # Intelligent routing
-├── action/               # Execution & file operations
-│   ├── file_manager.py   # File operations
-│   └── finalizer.py      # Result validation
-├── orchestrator.py       # Main coordinator
-├── result_processor.py   # File generation from results
-├── workspace/           # Generated files
-└── requirements.txt     # Dependencies
+Enter your task: Write a Python function that validates email addresses using regex
 ```
 
-##  Configuration
+The system will then execute the task and generate the necessary files.
 
-### Custom Model Selection
+## Agent Roles
 
-Override automatic model selection:
+The system uses different types of agents, each with a specialized role:
 
-```python
-orchestrator = MultiAgentOrchestrator()
+- **`PlannerAgent`**: Responsible for breaking down a complex task into a series of smaller, more manageable subtasks.
+- **`ExecutorAgent`**: Executes a specific subtask, such as writing code or analyzing data.
+- **`AnalyzerAgent`**: Analyzes the results of a task and provides insights.
+- **`FinalizerAgent`**: Consolidates the results of all the subtasks and generates a final report.
 
-# Use custom model
-config = orchestrator.spawner.spawn_agent(
-    agent_type=AgentType.EXECUTOR,
-    task_description="your task",
-    custom_model="your-preferred-model"
-)
-```
-
-### Workspace Configuration
-
-Change workspace directory:
-
-```python
-orchestrator = MultiAgentOrchestrator(workspace="./custom_workspace")
-```
-
-### Security Levels
-
-Adjust security validation:
-
-```python
-from admin.security import SecurityLevel
-
-# Available levels: LOW, MEDIUM, HIGH, CRITICAL
-orchestrator.security.validate_command(command, SecurityLevel.HIGH)
-```
-
-##  System Statistics
-
-View comprehensive statistics:
-
-```python
-# Get stats
-stats = orchestrator.get_system_stats()
-
-# Display in terminal
-orchestrator.display_stats()
-```
-
-Metrics include:
-- Total agents spawned
-- Active agents by type
-- Task completion rates
-- File operation statistics
-- Model usage distribution
-
-##  Security Features
-
-- **Path Traversal Prevention**: Restricts file operations to workspace
-- **Command Validation**: Blocks dangerous shell commands
-- **Input Sanitization**: Removes control characters and null bytes
-- **Pattern Matching**: Detects forbidden operations (rm -rf, fork bombs, etc.)
-- **Audit Logging**: Tracks all security events
-
-##  Troubleshooting
-
-### 401 Unauthorized Error
-
-**Problem**: `unauthorized (status code: 401)`
-
-**Solutions**:
-1. **Cloud models require authentication**:
-   ```bash
-   export OLLAMA_API_KEY="your-api-key"
-   ```
-
-2. **Use local models instead**:
-   ```bash
-   ollama pull deepseek-v3.1:671b  # Remove :cloud suffix
-   ```
-
-3. **Check available models**:
-   ```bash
-   ollama list
-   ```
-
-### Models Not Found
-
-**Problem**: Model not available
-
-**Solution**:
-```bash
-# Pull the model
-ollama pull deepseek-v3.1:671b-cloud
-
-# Or use alternative
-ollama pull llama3.2
-```
-
-### Memory Issues
-
-**Problem**: Out of memory
-
-**Solution**:
-- Use smaller models (7B instead of 671B)
-- Close other applications
-- Increase system swap space
-
-### No Files Generated
-
-**Problem**: Task completes but no files created
-
-**Solution**:
-- Check workspace/ directory permissions
-- Review result_processor logs
-- Use manual code extraction fallback
-
-##  Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-##  License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-##  Acknowledgments
-
-- Built with [Ollama](https://ollama.ai/) for local LLM inference
-- Uses [Rich](https://rich.readthedocs.io/) for beautiful terminal output
-- Models by DeepSeek, Qwen, and other open-source contributors
-
-##  Support
-
-- **Issues**: Open an issue on GitHub
-- **Discussions**: Use GitHub Discussions for questions
-- **Documentation**: See `/docs` for detailed guides
-
-##  Roadmap
-
-- [ ] Support for more AI models (GPT-4, Claude)
-- [ ] Web interface for task submission
-- [ ] Collaborative multi-agent conversations
-- [ ] Plugin system for custom agents
-- [ ] Cloud deployment support
-- [ ] Real-time progress streaming
-- [ ] Task templates library
-
----
-
-**Built with ❤️ using AI-powered multi-agent orchestration**
+By using specialized agents, the system can handle a wide range of tasks with a high degree of accuracy and efficiency.
