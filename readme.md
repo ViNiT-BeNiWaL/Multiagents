@@ -5,6 +5,7 @@ This project is a sophisticated **FastAPI-based** multi-agent system designed to
 ## Key Features
 
 - **Full Stack Project Generation:** Capable of generating complex directory structures (e.g., MERN stack with `client/` and `server/`) using a robust file protocol.
+- **Vision-to-Code:** Can analyze UI screenshots and generate matching code (React, HTML/CSS).
 - **Self-Healing Dependency Management:** Automatically runs `npm install` or `pip install`. If installation fails, the system **self-corrects** by asking the AI to fix the configuration files (e.g., `package.json`) and retries.
 - **Intelligent Task Decomposition:** The system takes a high-level task and breaks it down into actionable subtasks.
 - **Dynamic Agent Spawning:** Automatically spawns specialized agents (Planner, Executor, Finalizer) based on the task needs.
@@ -41,6 +42,12 @@ The system attempts to make the generated code **runnable out of the box**.
 1.  It detects `package.json` or `requirements.txt`.
 2.  Run the install command (`npm install`, etc).
 3.  **Self-Correction**: If the install fails (e.g. invalid version), it feeds the error back to the AI, patches the file, and retries automatically.
+
+### Vision Agent 👁️➡️💻
+The system includes a dedicated `VisionAgent` that can:
+- **Analyze UI Designs:** Breaks down screenshots into structural components (Header, Sidebar, Grid).
+- **Generate Code:** Converts visual inputs directly into frontend code (e.g., "Build this dashboard").
+- **Multi-Provider Support:** Works with LLaVA (Ollama), GPT-4o, and Gemini Pro Vision.
 
 ## Getting Started
 
