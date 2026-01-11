@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from cognitive.planner import PlannerAgent
 from admin.manager import AgentManager
 from admin.spawner import AgentSpawner, AgentType
@@ -6,7 +6,9 @@ from admin.security import SecurityValidator, SecurityLevel
 from processing.result_processor import ResultProcessor
 from action.finalizer import FinalizerAgent
 from action.file_manager import FileManager
+
 from core.llm_router import LLMRouter
+from cognitive.vision import VisionAgent
 
 
 class OrchestratorEngine:
@@ -27,6 +29,7 @@ class OrchestratorEngine:
 
         self.planner = None
         self.finalizer = None
+        self.vision = None
 
     def execute(self, task: str, context: Dict[str, Any] | None = None) -> Dict[str, Any]:
         import uuid
@@ -58,6 +61,28 @@ class OrchestratorEngine:
             "healing": healing_report,
             "report": report
         }
+
+    def execute_with_images(self, task: str, images: List[str], context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+        """
+        Execute a task that involves visual input (screenshots/mockups).
+        """
+        if not self.vision:
+             cfg = self.spawner.spawn_agent(AgentType.VISION, "Vision Analysis")
+             self.vision = VisionAgent(cfg.model_name, cfg.provider)
+        
+        # 1. Analyze the images to get technical requirements
+        print(f"Analyzing {len(images)} images...")
+        analysis = self.vision.analyze_ui(images)
+        
+        # 2. Enrich the task with visual analysis
+        enriched_task = (
+            f"Original Task: {task}\n\n"
+            f"Visual Analysis of UI/UX Requirements:\n{analysis}\n\n"
+            "Based on the visual analysis above, implement the solution."
+        )
+        
+        # 3. Proceed with standard execution flow
+        return self.execute(enriched_task, context)
 
     def _verify_and_heal(self, file_manager: FileManager, result_processor: ResultProcessor, max_retries: int = 3):
         from action.environment_manager import EnvironmentManager

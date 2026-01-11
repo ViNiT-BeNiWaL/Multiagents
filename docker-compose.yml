@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  core:
+    build: .
+    container_name: multiagent_core
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./workspace:/app/workspace
+      - ./.env:/app/.env
+    environment:
+      # Allow connection to host's Ollama instance
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

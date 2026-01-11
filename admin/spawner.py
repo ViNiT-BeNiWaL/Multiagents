@@ -8,6 +8,7 @@ class AgentType(Enum):
     PLANNER = "planner"
     EXECUTOR = "executor"
     FINALIZER = "finalizer"
+    VISION = "vision"
 
 
 @dataclass

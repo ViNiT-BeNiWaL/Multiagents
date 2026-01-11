@@ -95,6 +95,21 @@ The project includes an automated setup script to install dependencies and pull 
              }'
     ```
 
+## Docker Support 🐳
+
+You can run the entire system in a Docker container.
+
+1.  **Build and Run:**
+    ```bash
+    docker-compose up --build
+    ```
+
+2.  **Access:**
+    The API will be available at `http://localhost:8000`.
+
+3.  **Note on Ollama:**
+    The container is configured to talk to your *host machine's* Ollama instance via `host.docker.internal`. Ensure Ollama is running on your machine (`ollama serve`).
+
 ## Development
 
 - **`app/`**: Contains the FastAPI application and routes.
