@@ -6,17 +6,22 @@ from admin.security import SecurityValidator, SecurityLevel
 from processing.result_processor import ResultProcessor
 from action.finalizer import FinalizerAgent
 from action.file_manager import FileManager
+from core.llm_router import LLMRouter
 
 
 class OrchestratorEngine:
     """
     Core orchestration engine (NO UI, NO API)
+    Supports multiple LLM providers via LLMRouter.
     """
 
     def __init__(self, workspace: str = "./workspace"):
         self.spawner = AgentSpawner()
         self.manager = AgentManager()
         self.security = SecurityValidator()
+        self.base_workspace = workspace
+        
+        # Default global (legacy support)
         self.file_manager = FileManager(workspace)
         self.result_processor = ResultProcessor(self.file_manager)
 
@@ -24,30 +29,107 @@ class OrchestratorEngine:
         self.finalizer = None
 
     def execute(self, task: str, context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+        import uuid
+        project_id = f"project_{uuid.uuid4().hex[:8]}"
+        project_path = f"{self.base_workspace}/{project_id}"
+        
+        # Scoped instances for this task
+        scoped_fm = FileManager(project_path)
+        scoped_rp = ResultProcessor(scoped_fm)
+        
         plan = self._plan(task, context)
         results = self._execute_plan(plan)
-        files = self.result_processor.create_complete_implementation(task, results)
+        
+        # Use scoped processor
+        files = scoped_rp.create_complete_implementation(task, results)
+        
+        # Auto-heal dependencies using scoped instances
+        healing_report = self._verify_and_heal(scoped_fm, scoped_rp)
+        
         report = self._finalize(task, results)
 
         return {
             "task": task,
+            "project_id": project_id,
+            "project_path": project_path,
             "plan": plan,
             "results": results,
             "files": files,
+            "healing": healing_report,
             "report": report
         }
+
+    def _verify_and_heal(self, file_manager: FileManager, result_processor: ResultProcessor, max_retries: int = 3):
+        from action.environment_manager import EnvironmentManager
+        env_manager = EnvironmentManager(file_manager.base)
+        
+        history = []
+
+        for attempt in range(max_retries):
+            failures = env_manager.install_dependencies()
+            if not failures:
+                history.append(f"Attempt {attempt+1}: Success")
+                return history
+
+            # Fix failures
+            for fail in failures:
+                error_msg = fail["error"]
+                file_path = fail["file"]
+                
+                print(f"Fixing {file_path} (Attempt {attempt+1})...")
+                
+                cfg = self.spawner.spawn_agent(AgentType.EXECUTOR, "Fix Dependencies")
+                router = LLMRouter(provider=cfg.provider, model=cfg.model_name)
+                
+                fix_prompt = (
+                    f"Dependency installation failed for {file_path}.\n"
+                    f"Error log:\n{error_msg}\n\n"
+                    f"Please provide the corrected content for {file_path}. "
+                    "Use the standard file protocol:\n"
+                    f"### FILE: {file_path}\n..."
+                )
+                
+                response = router.chat(
+                    messages=[{"role": "user", "content": fix_prompt}]
+                )
+                
+                # Apply fix using scoped processor
+                result_processor.create_complete_implementation(
+                    "Fix", 
+                    {"fix": response.content}
+                )
+                
+            history.append(f"Attempt {attempt+1}: Failed with {len(failures)} errors. Retrying...")
+
+        return history
 
     def _plan(self, task: str, context: Dict[str, Any] | None):
         if not self.planner:
             cfg = self.spawner.spawn_agent(AgentType.PLANNER, task)
-            self.planner = PlannerAgent(cfg.model_name, cfg.temperature)
+            self.planner = PlannerAgent(cfg.model_name, cfg.temperature, cfg.provider)
 
         return self.planner.create_plan(task, context)
 
     def _execute_plan(self, plan):
+        from action.web_scraper import WebScraper
+        
         results = {}
+        scraper = WebScraper()
 
         for subtask in plan.subtasks:
+            # Handle Web Scraping Task
+            if subtask.task_type == "web_scrape":
+                print(f"Executing Scraping Task: {subtask.description}")
+                import re
+                urls = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', subtask.description)
+                if urls:
+                    scraped_content = scraper.scrape(urls[0])
+                    results[subtask.task_id] = f"Scraped content from {urls[0]}:\n{scraped_content[:2000]}..."
+                else:
+                    results[subtask.task_id] = "Error: No URL found in task description."
+                continue
+
+            # Handle General Task
             ok, reason = self.security.validate_command(
                 subtask.description, SecurityLevel.MEDIUM
             )
@@ -58,15 +140,30 @@ class OrchestratorEngine:
             cfg = self.spawner.spawn_agent(
                 AgentType.EXECUTOR, subtask.description
             )
-
-            # Simple execution
-            import ollama
-            response = ollama.chat(
-                model=cfg.model_name,
-                messages=[{"role": "user", "content": subtask.description}]
+            
+            # Use LLMRouter instead of direct ollama calls
+            router = LLMRouter(provider=cfg.provider, model=cfg.model_name)
+            
+            system_prompt = (
+                "You are an expert software engineer. "
+                "When generating code which should be saved to a file, you MUST precede every code block "
+                "with its filepath using the format:\n"
+                "### FILE: path/to/file.ext\n"
+                "```language\n"
+                "code...\n"
+                "```\n"
+                "For complex projects (like MERN), ensure you organize files into folders "
+                "(e.g., server/index.js, client/src/App.js)."
             )
 
-            results[subtask.task_id] = response["message"]["content"]
+            response = router.chat(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": subtask.description}
+                ]
+            )
+
+            results[subtask.task_id] = response.content
 
         return results
 

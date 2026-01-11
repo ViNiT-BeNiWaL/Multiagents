@@ -15,6 +15,16 @@ class ResultProcessor:
             if not isinstance(content, str):
                 continue
 
+            # NEW: Try to find explicitly labeled files first
+            labeled_files = self._extract_labeled_files(content)
+            if labeled_files:
+                for file_info in labeled_files:
+                    created_files.append(
+                        self.fm.write_file(file_info["path"], file_info["content"])
+                    )
+                continue
+
+            # FALLBACK: Legacy HTML/CSS/JS scraping
             blocks = re.findall(
                 r"```(\w+)\n(.*?)```",
                 content,
@@ -40,6 +50,28 @@ class ResultProcessor:
                     )
 
         return created_files
+
+    def _extract_labeled_files(self, content: str) -> List[Dict[str, str]]:
+        """
+        Parses content looking for:
+        ### FILE: path/to/file.ext
+        ```lang
+        code...
+        ```
+        """
+        files = []
+        # Regex finds "### FILE: <path>" followed somewhat closely by a code block
+        pattern = r"### FILE: ([\w/.-]+)\s+```\w*\n(.*?)```"
+        
+        matches = re.findall(pattern, content, re.DOTALL)
+        
+        for path, code in matches:
+            files.append({
+                "path": path.strip(),
+                "content": code.strip()
+            })
+            
+        return files
 
     # -----------------------------
     # HTML SPLITTING LOGIC

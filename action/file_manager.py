@@ -7,5 +7,6 @@ class FileManager:
 
     def write_file(self, name: str, content: str):
         path = self.base / name
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
         return {"filename": name, "size": len(content)}

@@ -1,74 +1,103 @@
-# Multi-Agent System
+# Multi-Agent Orchestration System
 
-This project is a sophisticated multi-agent system designed to execute complex tasks by leveraging the power of large language models (LLMs). It intelligently breaks down tasks, assigns them to specialized AI agents, and generates the necessary files and reports. The system is built to be extensible, allowing for the easy addition of new agents and capabilities.
+This project is a sophisticated **FastAPI-based** multi-agent system designed to execute complex tasks by leveraging the power of local Large Language Models (LLMs) via Ollama. It intelligently breaks down tasks, assigns them to specialized AI agents, and generates the necessary files and reports.
 
-## Features
+## Key Features
 
-- **Intelligent Task Decomposition:** The system can take a high-level task and break it down into smaller, manageable subtasks.
-- **Automatic Model Selection:** Based on the nature of a subtask, the system automatically selects the most appropriate AI model for the job (e.g., a coding model for a programming task, a creative model for writing tasks).
-- **Web Search Capability:** The system can access the web to answer questions and incorporate real-time information into its responses.
-- **File Generation:** The system can generate files, such as code, reports, and other documents, based on the results of the tasks.
-- **Interactive Demo Mode:** An interactive command-line interface allows you to give tasks to the system and see it in action.
-- **Extensible Architecture:** The project is designed to be easily extended with new agents, models, and capabilities.
+- **Full Stack Project Generation:** Capable of generating complex directory structures (e.g., MERN stack with `client/` and `server/`) using a robust file protocol.
+- **Self-Healing Dependency Management:** Automatically runs `npm install` or `pip install`. If installation fails, the system **self-corrects** by asking the AI to fix the configuration files (e.g., `package.json`) and retries.
+- **Intelligent Task Decomposition:** The system takes a high-level task and breaks it down into actionable subtasks.
+- **Dynamic Agent Spawning:** Automatically spawns specialized agents (Planner, Executor, Finalizer) based on the task needs.
+- **Security Validation:** Commands are validated against security levels before execution to prevent unsafe operations.
+- **Local Privacy:** Built on top of [Ollama](https://ollama.ai/), ensuring all model inference happens locally.
+- **REST API:** Fully functional FastAPI backend for easy integration.
 
 ## System Architecture
 
-The system is composed of several key components that work together to execute tasks:
+The system is built on a modular architecture:
 
-- **`MultiAgentOrchestrator`**: The central coordinator of the entire system. It manages the overall task execution flow.
-- **`AgentSpawner`**: Responsible for dynamically selecting and spawning the best AI model for a given subtask.
-- **`PlannerAgent`**: Creates a step-by-step execution plan for a given task.
-- **`FileManager`**: Manages all file-related operations, such as reading, writing, and creating files.
-- **`ResultProcessor`**: Takes the outputs from the AI models and creates the final implementation files.
-- **`FinalizerAgent`**: Assesses the quality of the results and provides a concluding report.
+- **`OrchestratorEngine`**: The core brain (no UI/API) that coordinates the entire lifecycle.
+- **`EnvironmentManager`**: Handles automated dependency installation and environment setup.
+- **`AgentSpawner`**: Dynamically configures and spawns the appropriate LLM contexts.
+- **`PlannerAgent`**: Breaks down the initial prompt into a structured plan.
+- **`ExecutorAgent`**: Executes individual subtasks using the selected LLM with support for deep file structures.
+- **`SecurityValidator`**: Enforces security policies (e.g., blocking dangerous shell commands).
+- **`ResultProcessor`**: Parses agent output and handles file creation (including recursive directories).
+- **`FinalizerAgent`**: Reviews the work and generates a final report.
+- **`FileManager`**: Handles workspace file operations.
+
+## Capabilities
+
+### Complex Project Structures
+Unlike simple code generators, this system supports creating deep directory trees.
+- **Example**: "Create a MERN stack app"
+- **Result**:
+  - `workspace/server/package.json`
+  - `workspace/server/routes/auth.js`
+  - `workspace/client/src/App.js`
+
+### Auto-Install & Repair
+The system attempts to make the generated code **runnable out of the box**.
+1.  It detects `package.json` or `requirements.txt`.
+2.  Run the install command (`npm install`, etc).
+3.  **Self-Correction**: If the install fails (e.g. invalid version), it feeds the error back to the AI, patches the file, and retries automatically.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- [Ollama](https://ollama.ai/) installed and running
+- **Mac/Linux** (Recommended)
+- **Python 3.10+**
+- **Ollama** installed and running
 
 ### Installation
 
-1.  Clone the repository:
+The project includes an automated setup script to install dependencies and pull the required Ollama models.
 
+1.  Clone the repository:
     ```bash
     git clone https://github.com/your-username/multi-agent-system.git
     cd multi-agent-system
     ```
 
-2.  Install the required Python packages:
-
+2.  Run the setup script:
     ```bash
-    pip install -r requirements.txt
+    ./setup.sh
     ```
-
-3.  Make sure the Ollama server is running. You can start it by running the `ollama serve` command in your terminal.
+    This will:
+    - Check for Python and Ollama.
+    - Install Python dependencies from `requirements.txt`.
+    - Pull the default models (e.g., `deepseek-v3.1`).
+    - Create the necessary workspace directories.
 
 ### Usage
 
-To start the interactive demo mode, run the following command:
+1.  **Start the Server:**
+    Use the provided run script to start the FastAPI server with hot-reload enabled.
+    ```bash
+    ./run.sh
+    ```
+    The server will start at `http://127.0.0.1:8000`.
 
-```bash
-python orchestrator.py
-```
+2.  **Access the API:**
+    - **Swagger UI:** Navigate to `http://127.0.0.1:8000/docs` to interact with the API visually.
+    - **ReDoc:** Navigate to `http://127.0.0.1:8000/redoc`.
 
-You can then enter tasks at the prompt. For example:
+3.  **Execute a Task:**
+    Send a POST request to `/tasks/execute`:
 
-```
-Enter your task: Write a Python function that validates email addresses using regex
-```
+    ```bash
+    curl -X POST "http://127.0.0.1:8000/tasks/execute" \
+         -H "Content-Type: application/json" \
+         -d '{
+               "task": "Create a MERN stack application for a car dealership",
+               "context": {}
+             }'
+    ```
 
-The system will then execute the task and generate the necessary files.
+## Development
 
-## Agent Roles
-
-The system uses different types of agents, each with a specialized role:
-
-- **`PlannerAgent`**: Responsible for breaking down a complex task into a series of smaller, more manageable subtasks.
-- **`ExecutorAgent`**: Executes a specific subtask, such as writing code or analyzing data.
-- **`AnalyzerAgent`**: Analyzes the results of a task and provides insights.
-- **`FinalizerAgent`**: Consolidates the results of all the subtasks and generates a final report.
-
-By using specialized agents, the system can handle a wide range of tasks with a high degree of accuracy and efficiency.
+- **`app/`**: Contains the FastAPI application and routes.
+- **`core/`**: Contains the core logic (`OrchestratorEngine`).
+- **`action/`**: Contains execution tools including `EnvironmentManager`.
+- **`workspace/`**: The default location where generated files are saved.

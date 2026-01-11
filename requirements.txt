@@ -2,3 +2,10 @@ fastapi
 uvicorn
 ollama
 pydantic
+beautifulsoup4
+requests
+pydantic-settings
+python-dotenv
+groq
+google-generativeai
+openai
