@@ -9,3 +9,11 @@ app = FastAPI(
 
 app.include_router(task_router, prefix="/tasks", tags=["Tasks"])
 app.include_router(system_router, prefix="/system", tags=["System"])
+
+@app.get("/")
+def root():
+    return {
+        "message": "Welcome to Multi-Agent Orchestrator API",
+        "docs": "/docs",
+        "health": "/system/health"
+    }
