@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     
     # Model Configuration
     default_model: str = "deepseek-v3.1:671b-cloud"
+
+    # Graph Database (Neo4j)
+    neo4j_uri: str = "bolt://localhost:7687"
+    neo4j_user: str = "neo4j"
+    neo4j_password: str = "password"
     
     # Application Settings
     debug: bool = True

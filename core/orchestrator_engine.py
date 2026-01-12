@@ -9,6 +9,8 @@ from action.file_manager import FileManager
 
 from core.llm_router import LLMRouter
 from cognitive.vision import VisionAgent
+from cognitive.graph_memory import GraphMemory
+import os
 
 
 class OrchestratorEngine:
@@ -30,8 +32,42 @@ class OrchestratorEngine:
         self.planner = None
         self.finalizer = None
         self.vision = None
+        self.graph = GraphMemory()
+
+
+
+    def index_workspace(self, project_id: str = None):
+        """
+        Scans workspace and builds Knowledge Graph.
+        """
+        target_dir = f"{self.base_workspace}/{project_id}" if project_id else self.base_workspace
+        print(f"🕸️ Indexing workspace: {target_dir}")
+        
+        for root, _, files in os.walk(target_dir):
+            for file in files:
+                if file.endswith(('.py', '.js', '.ts', '.md', '.txt')):
+                    path = os.path.join(root, file)
+                    try:
+                        with open(path, 'r') as f:
+                            content = f.read()
+                        print(f"-> Indexing {file}...")
+                        self.graph.index_content(file, content)
+                    except Exception as e:
+                        print(f"Skipped {file}: {e}")
 
     def execute(self, task: str, context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+        """
+        Execute with GraphRAG enablement.
+        """
+        # 1. Retrieve Graph Context
+        print("🧠 Retrieving Knowledge Graph context...")
+        graph_context = self.graph.retrieve_context(task)
+        
+        if graph_context:
+            print("✓ Found relevant graph context")
+            task = f"{task}\n\nAdditional Context from Knowledge Graph:\n{graph_context}"
+
+        # 2. Standard Execution
         import uuid
         project_id = f"project_{uuid.uuid4().hex[:8]}"
         project_path = f"{self.base_workspace}/{project_id}"

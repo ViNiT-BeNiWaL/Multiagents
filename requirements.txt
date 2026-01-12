@@ -9,3 +9,4 @@ python-dotenv
 groq
 google-generativeai
 openai
+neo4j
